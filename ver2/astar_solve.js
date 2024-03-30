@@ -105,6 +105,7 @@ function nextAstar(current) {
 
     setTimeout(() => {
         current.isCurrent = false
+        if (pq.isEmpty()) return
         return nextAstar(pq.shift().key)
     }, msBetweenSteps)
 }

@@ -1,4 +1,5 @@
 var _strokeWeight = 2
+var padding = 20
 var boxSize = 27.5
 
 var leftx = 11
@@ -37,18 +38,41 @@ function generateMaze() {
 	bfsqueue = []
 	distTo = new Map()
 
-	for (let x = leftx; x < windowWidth - boxSize - 7; x += boxSize){
-		grid.push([])
-		for(let y = startY; y < endY; y += boxSize){
-			let cell = new Cell(i, j, x, y)
-			if((y > height / 2 + yfromcenter || y < height / 2 - yfromcenter) || (x > rightx)){
+	if (windowWidth < 430) {
+
+		let bottomOfStage = document.getElementsByClassName('container')[0].getBoundingClientRect().bottom
+		let stageWidth = windowWidth - padding - _strokeWeight
+		boxSize = stageWidth / 15
+
+		for (let x = leftx; x < windowWidth - boxSize; x += boxSize){
+			grid.push([])
+			for(let y = bottomOfStage - _strokeWeight - 1; y < height - boxSize; y += boxSize){
+				let cell = new Cell(i, j, x, y)
 				cell.enable = true
+				grid[i].push(cell)
+				j++
 			}
-			grid[i].push(cell)
-			j++
+			i++
+			j=0
 		}
-		i++
-		j=0
+
+	} else {
+
+		boxSize = 27.5
+		for (let x = leftx; x < windowWidth - boxSize - padding / 2; x += boxSize){
+			grid.push([])
+			for(let y = startY; y < endY; y += boxSize){
+				let cell = new Cell(i, j, x, y)
+				if((y > height / 2 + yfromcenter || y < height / 2 - yfromcenter) || (x > rightx)){
+					cell.enable = true
+				}
+				grid[i].push(cell)
+				j++
+			}
+			i++
+			j=0
+		}
+
 	}
 
 	// set first and last to random cells in the grid until they are not the same and they are enabled
