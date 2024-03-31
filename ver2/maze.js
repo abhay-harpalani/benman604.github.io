@@ -148,7 +148,7 @@ function onMazeGenerated() {
 }
 
 function draw() {
-	background(20)
+	background(backgroundColor)
 
 	// rectMode(CENTER)
 	// fill(255, 0, 0)
@@ -166,7 +166,7 @@ function draw() {
 	}
 
 	if(current) {
-		fill(100)
+		fill(outlineColor)
 		noStroke()
 		rectMode(CORNER)
 		rect(current.x, current.y, boxSize)
@@ -174,7 +174,7 @@ function draw() {
 
 	distTo.forEach((value, key, innerMap) => {
 		if (value.score) {
-			fill(100)
+			fill(lighterColor)
 			noStroke()
 			text(Math.round(value.score * 1000) / 1000, key.x + 5, key.y + 15)
 		}
@@ -182,14 +182,14 @@ function draw() {
 
 	if(dfsstack.length > 1){	
 		for(let i=0; i<dfsstack.length-1; i++) {
-			stroke(200,255,40)
+			stroke(highlightColor.r, highlightColor.g, highlightColor.b)
 			strokeWeight(2)  
 			line(dfsstack[i].x + boxSize/2, dfsstack[i].y + boxSize/2, dfsstack[i+1].x + boxSize/2, dfsstack[i+1].y + boxSize/2) 
 		}
 	}
 
 	if (done) {
-		fill(200,255,40)
+		fill(highlightColor.r, highlightColor.g, highlightColor.b)
 		noStroke()
 		rectMode(CENTER)
 		ellipse(first.x + boxSize / 2, first.y + boxSize / 2, boxSize / 2)
@@ -205,8 +205,4 @@ function setButtonsEnabled(val) {
 	// document.getElementById('dijkstra').disabled = !val
 	document.getElementById('dfs').disabled = !val
 	document.getElementById('bfs').disabled = !val
-}
-
-function windowResized() {
-    resizeCanvas(windowWidth, windowHeight)
 }

@@ -6,6 +6,44 @@
     --highlight: rgba(200,255,40, 0.8);
     --text: white;
     --link: #93d0ff;
+    --link-hover: var(--highlight);
+    --text-disabled: darkgray;
+    --outline-disabled: rgb(90, 90, 90);
+}
+
+/* for light mode users */
+@media (prefers-color-scheme: light) {
+    :root {
+        --background: rgb(220, 220, 220);
+        --outline: rgb(120, 120, 120);
+        --highlight: rgba(200,255,40, 0.8);
+        --text: black;
+        --link: #0077ff;
+        --link-hover: darkblue;
+        --text-disabled: darkgray;
+        --outline-disabled: rgb(90, 90, 90);
+    }
+}
+
+/* for light mode toggle switch */
+[data-theme="light"] {
+    --background: rgb(220, 220, 220);
+    --outline: rgb(120, 120, 120);
+    --highlight: rgba(200,255,40, 0.8);
+    --text: black;
+    --link: #0077ff;
+    --link-hover: darkblue;
+    --text-disabled: darkgray;
+    --outline-disabled: rgb(90, 90, 90);
+}
+
+[data-theme="dark"] {
+    --background: rgb(20, 20, 20);
+    --outline: rgba(255, 255, 255, 0.705);
+    --highlight: rgba(200,255,40, 0.8);
+    --text: white;
+    --link: #93d0ff;
+    --link-hover: var(--highlight);
     --text-disabled: darkgray;
     --outline-disabled: rgb(90, 90, 90);
 }
@@ -22,11 +60,6 @@
     .container{
         height: fit-content !important;
     }
-}
-
-/* for light mode users */
-@media (prefers-color-scheme: light) {
-    /*  */
 }
 
 #sketch{
@@ -62,7 +95,7 @@ a {
 }
 
 a:hover {
-    color: var(--highlight);
+    color: var(--link-hover);
     cursor: pointer;
 }
 

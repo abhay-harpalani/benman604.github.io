@@ -26,14 +26,14 @@ function Cell(i, j, x, y) {
 		if (!this.enable || !this.ready) {return}
 
         if(this.visited && done){
-            fill(50)
+            fill(darkerColor)
             noStroke()
             rectMode(CORNER)
             rect(x, y, boxSize) 
         } 
 		
 		if(this.isCurrent) {
-			fill(100)
+			fill(lighterColor)
 			noStroke() 
             rectMode(CORNER)
 			// ellipse(x + boxSize/2, y + boxSize/2, boxSize/5 - padding) 
@@ -42,7 +42,7 @@ function Cell(i, j, x, y) {
 
 		noFill()
 		strokeWeight(_strokeWeight)
-		stroke(180)
+		stroke(outlineColor)
 
 		if (this.top)
 			line(x, y, x+boxSize, y)
