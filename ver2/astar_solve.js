@@ -89,6 +89,7 @@ function nextAstar(current) {
             dfsstack.push(trace.prev)
             trace = distTo.get(trace.prev)
         }
+        setButtonsEnabled(true)
         return
     }
 
@@ -105,7 +106,10 @@ function nextAstar(current) {
 
     setTimeout(() => {
         current.isCurrent = false
-        if (pq.isEmpty()) return
+        if (pq.isEmpty()) {
+            setButtonsEnabled(true)
+            return
+        }
         return nextAstar(pq.shift().key)
     }, msBetweenSteps)
 }
@@ -114,6 +118,7 @@ document.getElementById('astar').addEventListener('click', async () => {
     onMazeGenerated()
     pq = new PriorityQueue()
     distTo = new Map()
+    setButtonsEnabled(false)
     let result = astar(grid[first.i][first.j])
     console.log(result + " dij")
 })

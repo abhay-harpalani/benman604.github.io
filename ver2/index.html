@@ -34,20 +34,20 @@
             </p>
 
             <div class="btn-group">
-                <button id="prev">
+                <button id="prev" class="notransition">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
-                <button id="sketchName" style="width: 100%;">
+                <button id="sketchName" class="notransition" style="width: 100%;">
                     Maze
                 </button>
-                <button id="next">
+                <button id="next" class="notransition">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
 
             <div class="links">
-                <a id="sourceLink" href="#">View source</a> |
-                <a id="sketchesbtn" href="#">All sketches</a> |
+                <a id="sourceLink" href="#">View source</a>
+                <a id="sketchesbtn" href="#" style="margin-left: 10px; margin-right: 10px;">All sketches</a>
                 <a id="darkmodetoggle" href="#">Light Mode</a>
                 <br><br>
             </div>
@@ -56,27 +56,12 @@
             <!-- <p>Anyways, here's a maze generation and solving algorithm visualization. Check out the <a href="https://github.com/benman604/benman604.github.io" style="font-weight: bold;">source</a> or the <a href="../" style="font-weight: bold;">older version</a> of this website.</p> -->
             <!-- <br> -->
             <div class="grid">
-                <div class="half">
-                    <a href="https://github.com/benman604">
-                        <i class="fa-brands fa-github"></i>
-                        Github
-                    </a> <br>
-                    <a href="https://benjamin-man.itch.io/">
-                        <i class="fa-brands fa-itch-io"></i>
-                        itch.io
-                    </a> <br>
-                    <a href="https://www.youtube.com/channel/UCttQGQE5lg9vOBdDMSe2rLA">
-                        <i class="fa-brands fa-youtube"></i>
-                        YouTube
-                    </a> <br>
-                    <a href="https://www.linkedin.com/in/benjamin-man-839b69196/">
-                        <i class="fa-brands fa-linkedin"></i>
-                        LinkedIn
-                    </a> <br>
-                    <a>
-                        <i class="fas fa-envelope"></i>
-                        <b style="font-weight: 400;" id="clickmail">Email</b>
-                    </a>
+                <div class="half socials">
+                    <a href="https://github.com/benman604" class="fa-brands fa-github"></a>
+                    <!-- <a href="https://benjamin-man.itch.io/" class="fa-brands fa-itch-io"></a> -->
+                    <!-- <a href="https://www.youtube.com/channel/UCttQGQE5lg9vOBdDMSe2rLA" class="fa-brands fa-youtube"></a> -->
+                    <a href="https://www.linkedin.com/in/benjamin-man-839b69196/" class="fa-brands fa-linkedin"></a>
+                    <a class="fa-solid fa-envelope" id="clickmail"></a>
                 </div>
 
                 <div class="half">

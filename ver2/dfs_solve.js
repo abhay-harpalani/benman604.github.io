@@ -6,6 +6,7 @@ function dfs(current) {
 
     if(current.i == last.i && current.j == last.j) {
         dfsstack.push(current)
+        setButtonsEnabled(true)
         return dfsstack
     }
 
@@ -26,6 +27,7 @@ function dfs(current) {
             return dfs(dfsstack.pop()) 
         }, msBetweenSteps)
     } else {
+        setButtonsEnabled(true)
         return
     }
 }
@@ -33,7 +35,7 @@ function dfs(current) {
 document.getElementById('dfs').addEventListener('click', async () => {    
     onMazeGenerated()
     dfsstack = []
-    
+    setButtonsEnabled(false)
     let result = dfs(grid[first.i][first.j])
     console.log(result)
 })

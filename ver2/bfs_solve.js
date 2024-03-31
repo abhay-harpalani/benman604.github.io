@@ -14,6 +14,7 @@ function bfs(current) {
             trace = prevVisited.get(trace)
         }
         dfsstack.unshift(grid[last.i][last.j])
+        setButtonsEnabled(true)
         return
     }
 
@@ -32,6 +33,7 @@ function bfs(current) {
             return bfs(bfsqueue.shift())
         }, msBetweenSteps)
     } else {
+        setButtonsEnabled(true)
         return
     }
 }
@@ -40,6 +42,7 @@ document.getElementById('bfs').addEventListener('click', async () => {
     onMazeGenerated()
     bfsqueue = []
     found = false
+    setButtonsEnabled(false)
     let result = bfs(grid[first.i][first.j])
     console.log(result + " okkk")
 })
