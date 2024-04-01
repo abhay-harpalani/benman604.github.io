@@ -1,51 +1,69 @@
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap');
 
 :root {
-    --background: rgb(20, 20, 20);
-    --outline: rgba(255, 255, 255, 0.705);
-    --highlight: rgba(200,255,40, 0.8);
-    --text: white;
-    --link: #93d0ff;
-    --link-hover: var(--highlight);
-    --text-disabled: darkgray;
-    --outline-disabled: rgb(90, 90, 90);
+    --dark-background: rgb(20, 20, 20);
+    --dark-outline: rgba(255, 255, 255, 0.705);
+    --dark-highlight: rgba(200,255,40, 0.8);
+    --dark-text: white;
+    --dark-link: #93d0ff;
+    --dark-link-hover: var(--highlight);
+    --dark-text-disabled: darkgray;
+    --dark-outline-disabled: rgb(90, 90, 90);
+
+    --light-background: rgb(255, 255, 255);
+    --light-outline: rgb(120, 120, 120);
+    --light-highlight: rgba(200,255,40, 0.8);
+    --light-text: black;
+    --light-link: #0077ff;
+    --light-link-hover: darkblue;
+    --light-text-disabled: darkgray;
+    --light-outline-disabled: rgb(90, 90, 90);
+
+    --background: var(--dark-background);
+    --outline: var(--dark-outline);
+    --highlight: var(--dark-highlight);
+    --text: var(--dark-text);
+    --link: var(--dark-link);
+    --link-hover: var(--dark-link-hover);
+    --text-disabled: var(--dark-text-disabled);
+    --outline-disabled: var(--dark-outline-disabled);
 }
 
 /* for light mode users */
 @media (prefers-color-scheme: light) {
     :root {
-        --background: rgb(220, 220, 220);
-        --outline: rgb(120, 120, 120);
-        --highlight: rgba(200,255,40, 0.8);
-        --text: black;
-        --link: #0077ff;
-        --link-hover: darkblue;
-        --text-disabled: darkgray;
-        --outline-disabled: rgb(90, 90, 90);
+        --background: var(--light-background);
+        --outline: var(--light-outline);
+        --highlight: var(--light-highlight);
+        --text: var(--light-text);
+        --link: var(--light-link);
+        --link-hover: var(--light-link-hover);
+        --text-disabled: var(--light-text-disabled);
+        --outline-disabled: var(--light-outline-disabled);
     }
 }
 
 /* for light mode toggle switch */
 [data-theme="light"] {
-    --background: rgb(220, 220, 220);
-    --outline: rgb(120, 120, 120);
-    --highlight: rgba(200,255,40, 0.8);
-    --text: black;
-    --link: #0077ff;
-    --link-hover: darkblue;
-    --text-disabled: darkgray;
-    --outline-disabled: rgb(90, 90, 90);
+    --background: var(--light-background);
+    --outline: var(--light-outline);
+    --highlight: var(--light-highlight);
+    --text: var(--light-text);
+    --link: var(--light-link);
+    --link-hover: var(--light-link-hover);
+    --text-disabled: var(--light-text-disabled);
+    --outline-disabled: var(--light-outline-disabled);
 }
 
 [data-theme="dark"] {
-    --background: rgb(20, 20, 20);
-    --outline: rgba(255, 255, 255, 0.705);
-    --highlight: rgba(200,255,40, 0.8);
-    --text: white;
-    --link: #93d0ff;
-    --link-hover: var(--highlight);
-    --text-disabled: darkgray;
-    --outline-disabled: rgb(90, 90, 90);
+    --background: var(--dark-background);
+    --outline: var(--dark-outline);
+    --highlight: var(--dark-highlight);
+    --text: var(--dark-text);
+    --link: var(--dark-link);
+    --link-hover: var(--dark-link-hover);
+    --text-disabled: var(--dark-text-disabled);
+    --outline-disabled: var(--dark-outline-disabled);
 }
 
 /* for screen width < 430 */

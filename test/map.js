@@ -1,79 +1,78 @@
-let city = "New York City"; // Change city name as desired
-let bbox = []; // Bounding box coordinates
-let streets = []; // Array to hold street segment data
-let streetColor = [255, 0, 0]; // Color of street lines
-let osmBaseUrl = "https://nominatim.openstreetmap.org/search.php?q=";
-let osmFormat = "&format=json";
-let pixelToMileRatio = 0.01; // Each pixel represents 0.01 miles
+let highwaysData;
+let nodesMap = {};
+const coord = "37.8067898,-122.4112719"
+let minLat, maxLat, minLon, maxLon;
 
-function setup() {
-  createCanvas(800, 600); // Adjust canvas size as desired
-  getBoundingBox(city); // Fetch bounding box for specified city
+function miToDegLat(mi) {
+  return mi / 69.172;
 }
 
-function draw() {
-  background(220);
-  
-  // Display streets
-  stroke(streetColor);
-  for (let street of streets) {
-    line(street[0][0], street[0][1], street[1][0], street[1][1]);
-  }
+function miToDegLon(mi, lat) {
+  return mi / (69.172 * Math.cos(radians(lat)));
 }
 
-async function getBoundingBox(cityName) {
-  // Fetching bounding box coordinates for the city
-  let url = `${osmBaseUrl}${cityName}${osmFormat}`;
-  console.log("Requesting bounding box:", url);
-  let response = await fetch(url);
-  let data = await response.json();
-  console.log("Bounding box data:", data);
-  let citybbox = [
-    parseFloat(data[0].boundingbox[0]), // min lat
-    parseFloat(data[0].boundingbox[2]), // min lon
-    parseFloat(data[0].boundingbox[1]),  // max lat
-    parseFloat(data[0].boundingbox[3]) // max lon
-  ];
-  
-  // Calculate the width and height of the bounding box based on pixel to mile ratio and canvas aspect ratio
-  let canvasAspectRatio = width / height;
-  let bboxWidth = Math.sqrt((pixelToMileRatio * canvasAspectRatio) * (pixelToMileRatio * canvasAspectRatio));
-  let bboxHeight = bboxWidth / canvasAspectRatio;
-  
-  // Calculate random coordinates for the bounding box within the citybbox
-  let randomLat = random(citybbox[0], citybbox[2] - bboxHeight)
-  let randomLon = random(citybbox[1], citybbox[3] - bboxWidth)
-  
-  // Set the bbox coordinates based on the random coordinates and the calculated width and height
-  bbox = [
-    randomLat,
-    randomLon,
-    randomLat + bboxWidth,
-    randomLon + bboxHeight
-  ];
-  
-  getStreetData();
+function preload() {
+  // Coordinates and dimensions of the bounding box
+  let w = 2;
+  let h = windowHeight * 2 / windowWidth;
+
+  let centerLat = parseFloat(coord.split(",")[0]);
+  let centerLon = parseFloat(coord.split(",")[1]);
+
+  // Calculate bounding box coordinates
+  minLat = centerLat - miToDegLat(h) / 2;
+  maxLat = centerLat + miToDegLat(h) / 2;
+  minLon = centerLon - miToDegLon(w, centerLat) / 2;
+  maxLon = centerLon + miToDegLon(w, centerLat) / 2;
+
+  console.log(minLat, maxLat, minLon, maxLon);
+
+  // Construct Overpass QL query
+  let query = `[out:json];
+    (
+      way["highway"](bbox:${minLat},${minLon},${maxLat},${maxLon});
+      node(w);
+    );
+    out body;`;
+
+  // Send HTTP request to Overpass API
+  loadJSON("https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query), processData);
 }
 
-async function getStreetData() {
-  // Fetching street data within the bounding box
-  let url = `https://overpass-api.de/api/interpreter?data=[out:json];way(${bbox[0]},${bbox[1]},${bbox[2]},${bbox[3]})[highway];out;`;
-  console.log("Requesting street data:", url);
-  let response = await fetch(url);
-  let data = await response.json();
-  console.log("Street data:", data);
-  
-  // Convert OSM way data to street segments
-  for (let way of data.elements) {
-    if (way.type == "way") {
-      let street = [];
-      for (let node of way.nodes) {
-        let x = map(node.lon, bbox[1], bbox[3], 0, width);
-        let y = map(node.lat, bbox[0], bbox[2], height, 0);
-        street.push([x, y]);
-      }
-      streets.push(street);
+function processData(data) {
+  highwaysData = data;
+  // Build nodes map for faster lookup
+  for (let node of highwaysData.elements) {
+    if (node.type === "node") {
+      nodesMap[node.id] = node;
     }
   }
-  console.log("Streets:", streets);
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  background(backgroundColor.r, backgroundColor.g, backgroundColor.b);
+  if (highwaysData) {
+    drawHighways();
+  }
+}
+
+function drawHighways() {
+  for (let way of highwaysData.elements) {
+    if (way.type === "way" && way.nodes.length > 1) {
+      stroke(outlineColor);
+      strokeWeight(2);
+      noFill();
+      beginShape();
+      for (let nodeId of way.nodes) {
+        let node = nodesMap[nodeId];
+        if (node) {
+          let x = map(node.lon, minLon, maxLon, 0, width);
+          let y = map(node.lat, maxLat, minLat, 0, height);
+          vertex(x, y);
+        }
+      }
+      endShape();
+    }
+  }
 }

@@ -148,7 +148,7 @@ function onMazeGenerated() {
 }
 
 function draw() {
-	background(backgroundColor)
+	background(backgroundColor.r, backgroundColor.g, backgroundColor.b)
 
 	// rectMode(CENTER)
 	// fill(255, 0, 0)

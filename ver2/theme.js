@@ -3,7 +3,7 @@ function windowResized() {
 }
 
 var m_theme = "dark"
-var backgroundColor = 20
+var backgroundColor = {r:20, g:20, b:20}
 var outlineColor = 180
 var highlightColor = {r:200, g:255, b:40}
 var lighterColor = 100
@@ -16,17 +16,17 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', eve
 
 function theme(newColorScheme) {
     if(newColorScheme == "dark") {
-        backgroundColor = 20
+        backgroundColor = {r:20, g:20, b:20}
         outlineColor = 180
         highlightColor = {r:200, g:255, b:40}
         lighterColor = 100
         darkerColor = 50
         m_theme = "dark"
     } else {
-        backgroundColor = 220
+        backgroundColor = {r:255, g:255, b:255}
         outlineColor = 120
-        lighterColor = 100
-        darkerColor = 205
+        lighterColor = 200
+        darkerColor = 240
         highlightColor = {r:40, g:40, b:40}
         m_theme = "light"
     }
