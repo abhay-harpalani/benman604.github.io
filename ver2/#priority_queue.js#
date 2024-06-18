@@ -1,0 +1,65 @@
+class PriorityQueue {OA
+    constructor() {
+        this.heap = [];
+    }
+
+    push(entry) {
+        this.heap.push(entry);
+        this.bubbleUp(this.heap.length - 1);
+    }
+
+    shift() {
+        if (this.isEmpty()) {
+            return null;
+        }
+        const min = this.heap[0];
+        const end = this.heap.pop();
+        if (this.heap.length > 0) {
+            this.heap[0] = end;
+            this.bubbleDown(0);
+        }
+        return min;
+    }
+
+    bubbleUp(index) {
+        const entry = this.heap[index];
+        while (index > 0) {
+            const parentIndex = Math.floor((index - 1) / 2);
+            const parent = this.heap[parentIndex];
+            if (entry.value.score >= parent.value.score) {
+                break;
+            }
+            this.heap[parentIndex] = entry;
+            this.heap[index] = parent;
+            index = parentIndex;
+        }
+    }
+
+    bubbleDown(index) {
+        const length = this.heap.length;
+        const entry = this.heap[index];
+        while (true) {
+            let leftChildIndex = 2 * index + 1;
+            let rightChildIndex = 2 * index + 2;
+            let swap = null;
+
+            if (leftChildIndex < length && this.heap[leftChildIndex].value.score < entry.value.score) {
+                swap = leftChildIndex;
+            }
+            if (rightChildIndex < length && this.heap[rightChildIndex].value.score < (swap === null ? entry.value.score : this.heap[swap].value.score)) {
+                swap = rightChildIndex;
+            }
+
+            if (swap === null) {
+                break;
+            }
+            this.heap[index] = this.heap[swap];
+            this.heap[swap] = entry;
+            index = swap;
+        }
+    }
+
+    isEmpty() {
+        return this.heap.length === 0;
+    }
+}
