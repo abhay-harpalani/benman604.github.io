@@ -61,7 +61,7 @@ nextbtn.addEventListener("click", function(){
     let scriptIndex = scripts.indexOf(sktname.innerText)
     if(scriptIndex < scripts.length - 1){
         gotoScript(scriptIndex + 1)
-    } else{
+    } else {
         gotoScript(0)
     }
 })

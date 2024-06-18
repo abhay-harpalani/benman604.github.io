@@ -1,7 +1,3 @@
-function windowResized() {
-    resizeCanvas(windowWidth, windowHeight)
-}
-
 var m_theme = "dark"
 var backgroundColor = {r:20, g:20, b:20}
 var outlineColor = 180

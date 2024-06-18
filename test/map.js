@@ -1,6 +1,6 @@
 let highwaysData;
 let nodesMap = {};
-const coord = "37.8067898,-122.4112719"
+const coord = "35.6901084,139.702665"
 let minLat, maxLat, minLon, maxLon;
 
 function miToDegLat(mi) {
