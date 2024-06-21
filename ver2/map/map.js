@@ -1,10 +1,15 @@
-const overpassURL = "https://overpass-api.de/api/interpreter?data=" 
-const geonamesAPI = "https://api.3geonames.org/?randomland=yes&"
+const overpassAPI = "https://overpass-api.de/api/interpreter?data=" 
+const reverseGeocodeAPI = "https://nominatim.openstreetmap.org/reverse"
+const ipGeoAPI = "http://ip-api.com/json"
+const zipCodeAPI = "http://api.geonames.org/postalCodeLookupJSON?username=benny12&country=US&postalcode="
+
+let startSelection = {state: "Select", x: 0, y: 0};
+let endSelection = {state: "Select", x: 0, y: 0};
 
 let highwaysData;
 let geoData;
 let nodesMap = {};
-const coord = "37.8067898,-122.4112719"
+let windowWidthMiles = 2.5;
 let minLat, maxLat, minLon, maxLon;
 
 function miToDegLat(mi) {
@@ -15,13 +20,39 @@ function miToDegLon(mi, lat) {
   return mi / (69.172 * Math.cos(radians(lat)));
 }
 
-async function preload() {
-  // api call to get random coordinates
-  geoData = await fetch(geonamesAPI);
-  console.log(geoData);
+function xyToLatLon(x, y) {
+  let lat = map(y, 0, height, maxLat, minLat);
+  let lon = map(x, 0, width, minLon, maxLon);
+  return {lat, lon};
+}
 
-  let w = 2; // viewport width in miles
-  let h = windowHeight * 2 / windowWidth; 
+function latLonToXY(lat, lon) {
+  let x = map(lon, minLon, maxLon, 0, width);
+  let y = map(lat, maxLat, minLat, 0, height);
+  return {x, y};
+}
+
+async function fetchCurrentGeo() {
+  let response = await fetch(ipGeoAPI);
+  let data = await response.json();
+  console.log("Fetched IP geolocation:", data);
+  return data.lat + "," + data.lon;
+}
+
+async function fetchGeoFromZip(zip) {
+  let response = await fetch(zipCodeAPI + zip);
+  let data = await response.json();
+  console.log("Fetched zip code geolocation:", data);
+  if (!data.postalcodes || data.postalcodes.length === 0) {
+    screenLoadingState("Invalid zip code");
+    return;
+  }
+  return data.postalcodes[0].lat + "," + data.postalcodes[0].lng;
+}
+
+async function fetchGeoData(coord) {
+  let w = windowWidthMiles; // viewport width in miles
+  let h = windowHeight * windowWidthMiles / windowWidth; 
 
   let centerLat = parseFloat(coord.split(",")[0]);
   let centerLon = parseFloat(coord.split(",")[1]);
@@ -43,30 +74,69 @@ async function preload() {
     out body;`;
 
   // HTTP request to overpass API
-  loadJSON(overpassURL + encodeURIComponent(query), processData);
-}
-
-function processData(data) {
-  highwaysData = data;
-  // Build nodes map for faster lookup
-  for (let node of highwaysData.elements) {
-    if (node.type === "node") {
-      nodesMap[node.id] = node;
+  try {
+    let response = await fetch(overpassAPI + encodeURIComponent(query));
+    let data = await response.json();
+    console.log("Fetched geo data:", data);
+    highwaysData = data;
+    for (let node of highwaysData.elements) {
+      if (node.type === "node") {
+        nodesMap[node.id] = node;
+      }
     }
+    drewHighways = false;
+  } catch(error) {
+    console.error("Failed to fetch geo data:", error);
+    screenLoadingState("Failed to fetch data");
   }
 }
 
-function setup() {
+async function fetchReverseGeocode(lat, lon) {
+  try {
+    let response = await fetch(reverseGeocodeAPI + `?lat=${lat}&lon=${lon}&format=json`);
+    let data = await response.json();
+    return data;
+  } catch(error) {
+    console.error("Failed to fetch reverse geocode:", error);
+    return;
+  }
+}
+
+function screenLoadingState(message) {
+  background(backgroundColor.r, backgroundColor.g, backgroundColor.b);
+  stroke(outlineColor);
+  fill(outlineColor);
+  strokeWeight(1);
+  textSize(16);
+  text((message) ? message : "Loading...", width/2, height/2); 
+}
+
+async function setup() {
+  document.getElementById('buttons-map').style.display = 'block';
+  document.getElementById('buttons-maze').style.display = 'none';
+
   let canvas = createCanvas(windowWidth, windowHeight);
 	canvas.parent('sketch');
 
-  background(backgroundColor.r, backgroundColor.g, backgroundColor.b);
-  if (highwaysData) {
+  screenLoadingState();
+
+  let coord = await fetchCurrentGeo();
+  await fetchGeoData(coord);
+}
+
+let drewHighways = false;
+function draw() {
+  if (highwaysData && !drewHighways) {
     drawHighways();
+    drewHighways = true;
   }
 }
   
 function drawHighways() {
+  console.log(highwaysData.elements)
+
+  background(backgroundColor.r, backgroundColor.g, backgroundColor.b);
+
   for (let way of highwaysData.elements) {
     if (way.type === "way" && way.nodes.length > 1) {
       stroke(outlineColor);
@@ -85,3 +155,58 @@ function drawHighways() {
     }
   }
 }
+
+async function mousePressed() {
+  if (!highwaysData) return;
+  if (!(startSelection.state === "Selecting" || endSelection.state === "Selecting")) return;
+
+  let coord = xyToLatLon(mouseX, mouseY);
+  let data = await fetchReverseGeocode(coord.lat, coord.lon);
+  console.log(coord.lat + "," + coord.lon);
+  console.log(data);
+
+  let name;
+  if (data && data.address) {
+    if (data.name) name = data.name;
+    else if (data.address.road) name = ((data.address.house_number) ? data.address.house_number : "") + " " + data.address.road;
+    else if (data.address.city) name = data.address.city;
+    else if (data.address.state) name = data.address.state;
+    else if (data.address.country) name = data.address.country;
+    else name = "Unknown";
+  }
+
+  if (startSelection.state === "Selecting") {
+    startSelection.x = mouseX;
+    startSelection.y = mouseY;
+    startSelection.state = "Selected";
+    selStartBtn.innerText = name;
+  } else if (endSelection.state === "Selecting") {
+    endSelection.x = mouseX;
+    endSelection.y = mouseY;
+    endSelection.state = "Selected";
+    selEndBtn.innerText = name;
+  }
+}
+
+document.getElementById('go-zip').addEventListener('click', async () => {
+  screenLoadingState();
+  let zip = document.getElementById('zip').value;
+  let coord = await fetchGeoFromZip(zip);
+  if (coord) {
+    await fetchGeoData(coord);
+    draw();
+  }
+});
+
+const selStartBtn = document.getElementById('sel-start');
+const selEndBtn = document.getElementById('sel-end');
+
+selStartBtn.addEventListener('click', () => {
+  startSelection.state = "Selecting";
+  selStartBtn.innerText = "Selecting start";
+});
+
+selEndBtn.addEventListener('click', () => {
+  endSelection.state = "Selecting";
+  selEndBtn.innerText = "Selecting end";
+});

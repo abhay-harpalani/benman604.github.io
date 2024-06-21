@@ -21,16 +21,16 @@
         <div class="stage">
             <h1>Benjamin Man</h1>
             <div class="sidebyside">
+                <!-- <div> -->
+                    <!-- <img src="../newpfp.jpeg" alt="my pfp" class="pfp"> -->
+                <!-- </div> -->
                 <div>
-                    <img src="../newpfp.jpeg" alt="my pfp" class="pfp">
-                </div>
-                <div>
-                    <p class="ipa">bɛnd͡ʒəmɪn mæn</p> <br>
+                    <p class="ipa">/bɛnd͡ʒəmɪn mæn/</p> <br>
                     <p>Computer Science and Linguistics @ UCLA '27</p>
                 </div>
             </div>
             <p>
-                Hi, I'm Ben. I'm a freshman at UCLA, and I'm passionate about creative design and making an impact. I'm always looking for new opportunities to learn and grow.
+                Hi, I'm Ben. I'm a sophmore at UCLA, and I'm passionate about creative design and making an impact. I'm always looking for new opportunities to learn and grow.
             </p>
 
             <div class="btn-group">
@@ -67,12 +67,32 @@
                 <div class="half">
                     <button id="regen">Randomize Maze</button>
                     <button id="astar" disabled>Solve A*</button>
-                    <!-- <button id="dijkstra" disabled>Solve Dijkstra's</button> -->
                     <button id="bfs" disabled>Solve BFS</button>
                     <button id="dfs" disabled>Solve DFS</button>
+
+                    <div id="buttons-maze" style="display: none;">
+                        <!-- <button id="regen">Randomize Maze</button>
+                        <button id="astar" disabled>Solve A*</button>
+                        <button id="bfs" disabled>Solve BFS</button>
+                        <button id="dfs" disabled>Solve DFS</button> -->
+                    </div>
+                    <!-- <div id="buttons-map">
+                        <button id="astar" disabled>Solve A*</button>
+                        <button id="bfs" disabled>Solve BFS</button>
+                        <button id="dfs" disabled>Solve DFS</button>
+                    </div> -->
                 </div>
             </div>
             <br>
+        </div> <!-- stage -->
+
+        <div class="bottomright" id="buttons-map">
+            <div class="grid" style="gap: 0px 17px">
+                <input type="number" name="zip" id="zip" placeholder="Enter a zip code...">
+                <button id="go-zip" style="margin-top:5px; margin-bottom: 5px;">Go</button>
+            </div>
+            <button id="sel-start">Select Start</button>
+            <button id="sel-end">Select End</button>
         </div>
     </div>
 
