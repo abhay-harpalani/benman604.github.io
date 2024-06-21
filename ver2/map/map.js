@@ -1,7 +1,7 @@
 const overpassAPI = "https://overpass-api.de/api/interpreter?data=" 
 const reverseGeocodeAPI = "https://nominatim.openstreetmap.org/reverse"
-const ipGeoAPI = "http://ip-api.com/json"
-const zipCodeAPI = "http://api.geonames.org/postalCodeLookupJSON?username=benny12&country=US&postalcode="
+const ipGeoAPI = "https://ip-api.com/json"
+const zipCodeAPI = "https://api.geonames.org/postalCodeLookupJSON?username=benny12&country=US&postalcode="
 
 let startSelection = {state: "Select", x: 0, y: 0};
 let endSelection = {state: "Select", x: 0, y: 0};
