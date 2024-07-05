@@ -47,5 +47,5 @@ document.getElementById('toggleTheme').addEventListener('click', () => {
         m_theme = "dark"
         document.getElementById('toggleTheme').innerText = "Light mode"
     }
-    draw()
+    onUpdateColorTheme();
 });

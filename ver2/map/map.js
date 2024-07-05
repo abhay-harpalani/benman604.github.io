@@ -1,7 +1,7 @@
 const overpassAPI = "https://overpass-api.de/api/interpreter?data=" 
 const reverseGeocodeAPI = "https://nominatim.openstreetmap.org/reverse"
-const ipGeoAPI = "https://ip-api.com/json"
-const zipCodeAPI = "https://api.geonames.org/postalCodeLookupJSON?username=benny12&country=US&postalcode="
+const ipGeoAPI = "http://ip-api.com/json"
+const zipCodeAPI = "http://api.geonames.org/postalCodeLookupJSON?username=benny12&country=US&postalcode="
 
 let startSelection = {state: "Select", x: 0, y: 0};
 let endSelection = {state: "Select", x: 0, y: 0};
@@ -133,8 +133,6 @@ function draw() {
 }
   
 function drawHighways() {
-  console.log(highwaysData.elements)
-
   background(backgroundColor.r, backgroundColor.g, backgroundColor.b);
 
   for (let way of highwaysData.elements) {
@@ -167,29 +165,46 @@ async function mousePressed() {
 
   let name;
   if (data && data.address) {
+    let houseNumber = data.address.house_number;
+    if (houseNumber) houseNumber = houseNumber.split(";")[0];
     if (data.name) name = data.name;
-    else if (data.address.road) name = ((data.address.house_number) ? data.address.house_number : "") + " " + data.address.road;
+    else if (data.address.road) name = ((houseNumber) ? houseNumber : "") + " " + data.address.road;
     else if (data.address.city) name = data.address.city;
     else if (data.address.state) name = data.address.state;
     else if (data.address.country) name = data.address.country;
     else name = "Unknown";
   }
 
+  let coordInXY = latLonToXY(data.lat, data.lon);
+
   if (startSelection.state === "Selecting") {
-    startSelection.x = mouseX;
-    startSelection.y = mouseY;
+    startSelection.x = coordInXY.x;
+    startSelection.y = coordInXY.y;
     startSelection.state = "Selected";
     selStartBtn.innerText = name;
   } else if (endSelection.state === "Selecting") {
-    endSelection.x = mouseX;
-    endSelection.y = mouseY;
+    endSelection.x = coordInXY.x;
+    endSelection.y = coordInXY.y;
     endSelection.state = "Selected";
     selEndBtn.innerText = name;
   }
+
+  drawHighways();
+  noStroke();
+  fill(highlightColor.r, highlightColor.g, highlightColor.b);
+  if (startSelection.state === "Selected")
+    ellipse(startSelection.x, startSelection.y, 20, 20);
+  if (endSelection.state === "Selected")
+    triangle(endSelection.x, endSelection.y - 10, endSelection.x - 10, endSelection.y + 10, endSelection.x + 10, endSelection.y + 10);
 }
 
 document.getElementById('go-zip').addEventListener('click', async () => {
   screenLoadingState();
+  startSelection.state = "Select";
+  endSelection.state = "Select";
+  selStartBtn.innerText = "Select start";
+  selEndBtn.innerText = "Select end";
+
   let zip = document.getElementById('zip').value;
   let coord = await fetchGeoFromZip(zip);
   if (coord) {
@@ -210,3 +225,13 @@ selEndBtn.addEventListener('click', () => {
   endSelection.state = "Selecting";
   selEndBtn.innerText = "Selecting end";
 });
+
+function onUpdateColorTheme() {
+  drawHighways();
+  noStroke();
+  fill(highlightColor.r, highlightColor.g, highlightColor.b);
+  if (startSelection.state === "Selected")
+    ellipse(startSelection.x, startSelection.y, 20, 20);
+  if (endSelection.state === "Selected")
+    triangle(endSelection.x, endSelection.y - 10, endSelection.x - 10, endSelection.y + 10, endSelection.x + 10, endSelection.y + 10);
+}

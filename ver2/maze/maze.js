@@ -213,3 +213,5 @@ function setButtonsEnabled(val) {
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight)
 }
+
+function onUpdateColorTheme() {}
