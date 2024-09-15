@@ -179,6 +179,7 @@ function draw() {
 function drawHighways() {
   roadMap = new Map();
   mapGraphics.clear();
+  backtrace.clear();
   mapGraphics.stroke(outlineColor);
   mapGraphics.strokeWeight(2);
   mapGraphics.noFill();
