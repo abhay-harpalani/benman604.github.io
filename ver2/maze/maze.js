@@ -13,7 +13,7 @@ var last
 let stack = []
 
 var msBetweenSteps = 10
-var generateMazeInstantly = true
+var generateMazeInstantly = false
 
 let done = false
 

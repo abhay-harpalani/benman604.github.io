@@ -20,7 +20,7 @@ let addScript = (info) => {
 
 let common = ["theme.js"]
 let sketches = {
-    "map": ["map/map.js"],
+    "map": ["map/map.js", "map/bfs_map.js"],
     "maze": ["maze/cell.js", "maze/maze.js", "priority_queue.js", "maze/astar_maze.js", "maze/bfs_maze.js", "maze/dfs_maze.js"]
 }
 

@@ -3,14 +3,18 @@ const reverseGeocodeAPI = "https://nominatim.openstreetmap.org/reverse"
 const ipGeoAPI = "http://ip-api.com/json"
 const zipCodeAPI = "http://api.geonames.org/postalCodeLookupJSON?username=benny12&country=US&postalcode="
 
-let startSelection = {state: "Select", x: 0, y: 0};
-let endSelection = {state: "Select", x: 0, y: 0};
+let startSelection = {state: "Select", nodeId: null};
+let endSelection = {state: "Select", nodeId: null};
+let path = []; // list of node IDs
+let roadMap = new Map(); // adjacency list of node IDs
 
 let highwaysData;
 let geoData;
-let nodesMap = {};
-let windowWidthMiles = 2.5;
+let nodesMap = new Map(); // maps node IDs to lat lon x y
+let windowWidthMiles = 30;
 let minLat, maxLat, minLon, maxLon;
+let mapGraphics;
+let mapPathOverlay;
 
 function miToDegLat(mi) {
   return mi / 69.172;
@@ -51,6 +55,10 @@ async function fetchGeoFromZip(zip) {
 }
 
 async function fetchGeoData(coord) {
+  mapGraphics.clear();
+  screenLoadingState("Loading...");
+  setButtonsEnabled(false);
+
   let w = windowWidthMiles; // viewport width in miles
   let h = windowHeight * windowWidthMiles / windowWidth; 
 
@@ -68,7 +76,7 @@ async function fetchGeoData(coord) {
   // overpass ql query
   let query = `[out:json];
     (
-      way["highway"](bbox:${minLat},${minLon},${maxLat},${maxLon});
+      way["highway"~"primary|secondary|trunk|motorway"](bbox:${minLat},${minLon},${maxLat},${maxLon});
       node(w);
     );
     out body;`;
@@ -81,10 +89,15 @@ async function fetchGeoData(coord) {
     highwaysData = data;
     for (let node of highwaysData.elements) {
       if (node.type === "node") {
-        nodesMap[node.id] = node;
+        nodesMap.set(node.id, {
+          lat: node.lat,
+          lon: node.lon,
+          x: map(node.lon, minLon, maxLon, 0, width),
+          y: map(node.lat, maxLat, minLat, 0, height)
+        });
       }
     }
-    drewHighways = false;
+    drawHighways();
   } catch(error) {
     console.error("Failed to fetch geo data:", error);
     screenLoadingState("Failed to fetch data");
@@ -103,12 +116,12 @@ async function fetchReverseGeocode(lat, lon) {
 }
 
 function screenLoadingState(message) {
-  background(backgroundColor.r, backgroundColor.g, backgroundColor.b);
-  stroke(outlineColor);
-  fill(outlineColor);
-  strokeWeight(1);
-  textSize(16);
-  text((message) ? message : "Loading...", width/2, height/2); 
+  mapGraphics.background(backgroundColor.r, backgroundColor.g, backgroundColor.b);
+  mapGraphics.stroke(outlineColor);
+  mapGraphics.fill(outlineColor);
+  mapGraphics.strokeWeight(1);
+  mapGraphics.textSize(16);
+  mapGraphics.text((message) ? message : "Loading...", width/2, height/2); 
 }
 
 async function setup() {
@@ -118,40 +131,94 @@ async function setup() {
   let canvas = createCanvas(windowWidth, windowHeight);
 	canvas.parent('sketch');
 
+  mapGraphics = createGraphics(width, height);
+  mapPathOverlay = createGraphics(width, height);
   screenLoadingState();
 
-  let coord = await fetchCurrentGeo();
+  // let coord = await fetchCurrentGeo();
+  let coord = "37.7749,-122.4194"; // San Francisco
   await fetchGeoData(coord);
+  drawHighways();
 }
 
-let drewHighways = false;
+// let drewHighways = false;
 function draw() {
-  if (highwaysData && !drewHighways) {
-    drawHighways();
-    drewHighways = true;
+  // if (highwaysData && !drewHighways) {
+  //   drawHighways();
+  //   drewHighways = true;
+  // }
+  background(backgroundColor.r, backgroundColor.g, backgroundColor.b);
+  if (mapGraphics)  image(mapGraphics, 0, 0);
+  if (mapPathOverlay) image(mapPathOverlay, 0, 0);
+  noStroke();
+  fill(highlightColor.r, highlightColor.g, highlightColor.b);
+
+  if (startSelection.state == "Selected") {
+    let node = nodesMap.get(startSelection.nodeId); 
+    ellipse(node.x, node.y, 20, 20);
+  }
+  if (endSelection.state == "Selected") {
+    let node = nodesMap.get(endSelection.nodeId);
+    triangle(node.x, node.y - 10, node.x - 10, node.y + 10, node.x + 10, node.y + 10);
+    // triangle(endSelection.x, endSelection.y - 10, endSelection.x - 10, endSelection.y + 10, endSelection.x + 10, endSelection.y + 10);
+  }
+
+  if (path.length > 0) {
+    stroke(highlightColor.r, highlightColor.g, highlightColor.b);
+    strokeWeight(5);
+    noFill();
+    beginShape();
+    for (let nodeId of path) {
+      let node = nodesMap.get(nodeId);
+      vertex(node.x, node.y);
+    }
+    endShape();
   }
 }
   
 function drawHighways() {
-  background(backgroundColor.r, backgroundColor.g, backgroundColor.b);
+  roadMap = new Map();
+  mapGraphics.clear();
+  mapGraphics.stroke(outlineColor);
+  mapGraphics.strokeWeight(2);
+  mapGraphics.noFill();
 
   for (let way of highwaysData.elements) {
     if (way.type === "way" && way.nodes.length > 1) {
-      stroke(outlineColor);
-      strokeWeight(2);
-      noFill();
-      beginShape();
-      for (let nodeId of way.nodes) {
-        let node = nodesMap[nodeId];
+      mapGraphics.beginShape();
+      // for (let nodeId of way.nodes) {
+      //   let node = nodesMap[nodeId];
+      //   if (node) {
+      //     let x = map(node.lon, minLon, maxLon, 0, width);
+      //     let y = map(node.lat, maxLat, minLat, 0, height);
+      //     mapGraphics.vertex(x, y);
+      //   }
+      // }
+
+      for (let i=0; i<way.nodes.length-1; i++) {
+        let nodeId = way.nodes[i];
+        let nextNodeId = way.nodes[i+1];
+
+        let node = nodesMap.get(nodeId);
         if (node) {
-          let x = map(node.lon, minLon, maxLon, 0, width);
-          let y = map(node.lat, maxLat, minLat, 0, height);
-          vertex(x, y);
+          // let x = map(node.lon, minLon, maxLon, 0, width);
+          // let y = map(node.lat, maxLat, minLat, 0, height);
+          mapGraphics.vertex(node.x, node.y);
         }
+
+        if (!roadMap.get(nodeId)) roadMap.set(nodeId, []);
+        roadMap.get(nodeId).push(nextNodeId)
+        if (!roadMap.get(nextNodeId)) roadMap.set(nextNodeId, []);
+        roadMap.get(nextNodeId).push(nodeId)
       }
-      endShape();
+
+      let lastNode = way.nodes[way.nodes.length - 1];
+      mapGraphics.vertex(nodesMap.get(lastNode).x, nodesMap.get(lastNode).y);
+      mapGraphics.endShape();
     }
   }
+
+  setButtonsEnabled(true);
 }
 
 async function mousePressed() {
@@ -160,8 +227,9 @@ async function mousePressed() {
 
   let coord = xyToLatLon(mouseX, mouseY);
   let data = await fetchReverseGeocode(coord.lat, coord.lon);
+  let nearestNode = findNearestNode(coord.lat, coord.lon);
   console.log(coord.lat + "," + coord.lon);
-  console.log(data);
+  console.log(nodesMap.get(nearestNode));
 
   let name;
   if (data && data.address) {
@@ -178,24 +246,18 @@ async function mousePressed() {
   let coordInXY = latLonToXY(data.lat, data.lon);
 
   if (startSelection.state === "Selecting") {
-    startSelection.x = coordInXY.x;
-    startSelection.y = coordInXY.y;
+    // startSelection.x = coordInXY.x;
+    // startSelection.y = coordInXY.y;
+    startSelection.nodeId = nearestNode;
     startSelection.state = "Selected";
     selStartBtn.innerText = name;
   } else if (endSelection.state === "Selecting") {
-    endSelection.x = coordInXY.x;
-    endSelection.y = coordInXY.y;
+    // endSelection.x = coordInXY.x;
+    // endSelection.y = coordInXY.y;
+    endSelection.nodeId = nearestNode;
     endSelection.state = "Selected";
     selEndBtn.innerText = name;
   }
-
-  drawHighways();
-  noStroke();
-  fill(highlightColor.r, highlightColor.g, highlightColor.b);
-  if (startSelection.state === "Selected")
-    ellipse(startSelection.x, startSelection.y, 20, 20);
-  if (endSelection.state === "Selected")
-    triangle(endSelection.x, endSelection.y - 10, endSelection.x - 10, endSelection.y + 10, endSelection.x + 10, endSelection.y + 10);
 }
 
 document.getElementById('go-zip').addEventListener('click', async () => {
@@ -213,6 +275,22 @@ document.getElementById('go-zip').addEventListener('click', async () => {
   }
 });
 
+function findNearestNode(lat, lon) {
+  let nearestNode = null;
+  let nearestDistance = Infinity;
+
+  for (let [nodeId, node] of nodesMap) {
+    // let node = nodesMap[nodeId];
+    let distance = dist(lat, lon, node.lat, node.lon);
+    if (distance < nearestDistance) {
+      nearestDistance = distance;
+      nearestNode = nodeId;
+    }
+  }
+
+  return nearestNode;
+}
+
 const selStartBtn = document.getElementById('sel-start');
 const selEndBtn = document.getElementById('sel-end');
 
@@ -228,10 +306,15 @@ selEndBtn.addEventListener('click', () => {
 
 function onUpdateColorTheme() {
   drawHighways();
-  noStroke();
-  fill(highlightColor.r, highlightColor.g, highlightColor.b);
-  if (startSelection.state === "Selected")
-    ellipse(startSelection.x, startSelection.y, 20, 20);
-  if (endSelection.state === "Selected")
-    triangle(endSelection.x, endSelection.y - 10, endSelection.x - 10, endSelection.y + 10, endSelection.x + 10, endSelection.y + 10);
+  // noStroke();
+  // fill(highlightColor.r, highlightColor.g, highlightColor.b);
+  // if (startSelection.state === "Selected")
+  //   ellipse(startSelection.x, startSelection.y, 20, 20);
+  // if (endSelection.state === "Selected")
+  //   triangle(endSelection.x, endSelection.y - 10, endSelection.x - 10, endSelection.y + 10, endSelection.x + 10, endSelection.y + 10);
+}
+
+function setButtonsEnabled(val) {
+	document.getElementById('mastar').disabled = !val
+	document.getElementById('mbfs').disabled = !val
 }
