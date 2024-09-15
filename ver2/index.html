@@ -56,6 +56,17 @@
             <!-- <p>Anyways, here's a maze generation and solving algorithm visualization. Check out the <a href="https://github.com/benman604/benman604.github.io" style="font-weight: bold;">source</a> or the <a href="../" style="font-weight: bold;">older version</a> of this website.</p> -->
             <!-- <br> -->
 
+            <div class="grid buttons-map" style="margin-bottom: 20px;">
+                <div class="half">
+                    <p class="mini">Origin ●</p>
+                    <button id="sel-start">Select Start</button>
+                </div>
+                <div class="half">
+                    <p class="mini" style="text-align: right;">▲ Destination</p>
+                    <button id="sel-end">Select End</button>
+                </div>
+            </div>
+
             <div class="grid">
                 <div class="half socials">
                     <a href="https://github.com/benman604" class="fa-brands fa-github"></a>
@@ -77,7 +88,7 @@
                         <button id="bfs" disabled>Solve BFS</button>
                         <button id="dfs" disabled>Solve DFS</button>
                     </div>
-                    <div id="buttons-map">
+                    <div class="buttons-map">
                         <button id="mastar" disabled>Solve A*</button>
                         <button id="mbfs" disabled>Solve BFS</button>
                         <!-- <button id="dfs" disabled>Solve DFS</button> -->
@@ -87,13 +98,11 @@
             <br>
         </div> <!-- stage -->
 
-        <div class="bottomright" id="buttons-map">
+        <div class="bottomright buttons-map">
             <div class="grid" style="gap: 0px 17px">
                 <input type="number" name="zip" id="zip" placeholder="Enter a zip code...">
                 <button id="go-zip" style="margin-top:5px; margin-bottom: 5px;">Go</button>
             </div>
-            <button id="sel-start">Select Start</button>
-            <button id="sel-end">Select End</button>
         </div>
     </div>
 

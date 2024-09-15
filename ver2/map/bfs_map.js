@@ -1,32 +1,23 @@
-let start = null
-let end = null
-let found = false
 let bfsqueue = []
-let backtrace = new Map()
-let visited = new Set()
-
-
-let waitOneMsEvery = 1;
 
 document.getElementById('mbfs').addEventListener('click', () => {
     path = [];
-    start = startSelection.nodeId;
-    end = endSelection.nodeId;
     bfsqueue = [];
     visited.clear();
     backtrace.clear();
     found = false;
+    waitOneMsEvery = _waitOneMsEvery
 
     mapPathOverlay.clear();
     mapPathOverlay.stroke(255, 50, 50);
     mapPathOverlay.strokeWeight(2);
     mapPathOverlay.noFill();
 
-    if (start == null || end == null) return;
-    bfs(start);
+    if (startSelection.nodeId == null || endSelection.nodeId == null) return;
+    bfs(startSelection.nodeId, endSelection.nodeId);
 });
 
-async function bfs(start) {
+async function bfs(start, end) {
     let tick = 0;
     bfsqueue.push(start);
     while (bfsqueue.length > 0) {
@@ -34,20 +25,12 @@ async function bfs(start) {
 
         if (tick % waitOneMsEvery === 0) {
             await new Promise(resolve => setTimeout(resolve, 0.01));
-            // console.log(tick);
         }
         tick++;
 
-        if (tick > 100){
-            waitOneMsEvery = 100;
-        }
-        if (tick > 500) {
-            waitOneMsEvery = 500;
-        }
-
-        if (tick % 1000 === 0) {
-            waitOneMsEvery = tick * 3;
-        }
+        if (tick > 100) waitOneMsEvery = 100;
+        if (tick > 500) waitOneMsEvery = 500;
+        if (tick % 1000 === 0) waitOneMsEvery = tick * 3;
 
         if (current === end) {
             found = true;

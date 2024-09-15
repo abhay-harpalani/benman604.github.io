@@ -16,6 +16,13 @@ let minLat, maxLat, minLon, maxLon;
 let mapGraphics;
 let mapPathOverlay;
 
+let found = false
+let backtrace = new Map()
+let visited = new Set()
+
+let waitOneMsEvery = 1;
+const _waitOneMsEvery = 1;
+
 function miToDegLat(mi) {
   return mi / 69.172;
 }
@@ -54,8 +61,11 @@ async function fetchGeoFromZip(zip) {
   return data.postalcodes[0].lat + "," + data.postalcodes[0].lng;
 }
 
-async function fetchGeoData(coord) {
+async function fetchGeoData(coord, useDefault = false) {
   mapGraphics.clear();
+  mapPathOverlay.clear();
+  path = [];
+
   screenLoadingState("Loading...");
   setButtonsEnabled(false);
 
@@ -76,14 +86,19 @@ async function fetchGeoData(coord) {
   // overpass ql query
   let query = `[out:json];
     (
-      way["highway"~"primary|secondary|trunk|motorway"](bbox:${minLat},${minLon},${maxLat},${maxLon});
+      way["highway"~"trunk|primary|secondary|motorway|motorway_link"](bbox:${minLat},${minLon},${maxLat},${maxLon});
       node(w);
     );
     out body;`;
 
   // HTTP request to overpass API
   try {
-    let response = await fetch(overpassAPI + encodeURIComponent(query));
+    let response;
+    if (useDefault) {
+      response = await fetch('/ver2/map/sfbay_geodata.json');
+    } else {
+      response = await fetch(overpassAPI + encodeURIComponent(query));
+    }
     let data = await response.json();
     console.log("Fetched geo data:", data);
     highwaysData = data;
@@ -125,7 +140,9 @@ function screenLoadingState(message) {
 }
 
 async function setup() {
-  document.getElementById('buttons-map').style.display = 'block';
+  document.querySelectorAll('.buttons-map').forEach(element => {
+    element.style.visibility = 'visible';
+  });
   document.getElementById('buttons-maze').style.display = 'none';
 
   let canvas = createCanvas(windowWidth, windowHeight);
@@ -137,7 +154,7 @@ async function setup() {
 
   // let coord = await fetchCurrentGeo();
   let coord = "37.7749,-122.4194"; // San Francisco
-  await fetchGeoData(coord);
+  await fetchGeoData(coord, useDefault = true);
   drawHighways();
 }
 

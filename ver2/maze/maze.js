@@ -18,7 +18,9 @@ var generateMazeInstantly = false
 let done = false
 
 function setup() {
-	document.getElementById('buttons-map').style.display = 'none';
+	document.querySelectorAll('.buttons-map').forEach(element => {
+		element.style.display = 'none';
+	});
 	document.getElementById('buttons-maze').style.display = 'block';
 
 	let canvas = createCanvas(windowWidth, windowHeight);

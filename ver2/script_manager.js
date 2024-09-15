@@ -18,10 +18,10 @@ let addScript = (info) => {
 };
 
 
-let common = ["theme.js"]
+let common = ["theme.js", "priority_queue.js"]
 let sketches = {
-    "map": ["map/map.js", "map/bfs_map.js"],
-    "maze": ["maze/cell.js", "maze/maze.js", "priority_queue.js", "maze/astar_maze.js", "maze/bfs_maze.js", "maze/dfs_maze.js"]
+    "map": ["map/map.js", "map/bfs_map.js", "map/astar_map.js"],
+    "maze": ["maze/cell.js", "maze/maze.js", "maze/astar_maze.js", "maze/bfs_maze.js", "maze/dfs_maze.js"]
 }
 
 let scripts = [];

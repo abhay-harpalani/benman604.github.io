@@ -201,7 +201,7 @@ button:hover:not(:disabled):not(#sketchName) {
 }
 
 button:hover:not(:disabled):not(.notransition) {
-    transform: translate(3px, -3px);
+    transform: translate(0px, -1px);
 }
 
 button:disabled {
@@ -284,4 +284,18 @@ button:disabled {
     color: black;
     background-color: var(--highlight);
     border: 1px solid var(--highlight);
+}
+
+.mini {
+    font-size: xx-small;
+    margin: 0;
+    margin-bottom: 5px;
+}
+
+#sel-start, #sel-end {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100%;
+    /* max-width: ; */
+    text-wrap: nowrap;
 }
