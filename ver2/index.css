@@ -295,7 +295,6 @@ button:disabled {
 #sel-start, #sel-end {
     text-overflow: ellipsis;
     overflow: hidden;
-    width: 100%;
-    /* max-width: ; */
+    width: 148px;
     text-wrap: nowrap;
 }

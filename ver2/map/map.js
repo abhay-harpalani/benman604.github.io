@@ -20,7 +20,7 @@ let found = false
 let backtrace = new Map()
 let visited = new Set()
 
-let waitOneMsEvery = 1;
+let waitOneMsEvery = 10;
 const _waitOneMsEvery = 1;
 
 function miToDegLat(mi) {
@@ -65,6 +65,7 @@ async function fetchGeoData(coord, useDefault = false) {
   mapGraphics.clear();
   mapPathOverlay.clear();
   path = [];
+  nodesMap.clear();
 
   screenLoadingState("Loading...");
   setButtonsEnabled(false);
@@ -102,17 +103,25 @@ async function fetchGeoData(coord, useDefault = false) {
     let data = await response.json();
     console.log("Fetched geo data:", data);
     highwaysData = data;
+
+    // let hwDataElmsNew = []
     for (let node of highwaysData.elements) {
       if (node.type === "node") {
-        nodesMap.set(node.id, {
-          lat: node.lat,
-          lon: node.lon,
-          x: map(node.lon, minLon, maxLon, 0, width),
-          y: map(node.lat, maxLat, minLat, 0, height)
-        });
+        let xyPos = latLonToXY(node.lat, node.lon);
+        if (xyPos.x > 0 && xyPos.x < width && xyPos.y > 0 && xyPos.y < height) {
+          nodesMap.set(node.id, {
+            lat: node.lat,
+            lon: node.lon,
+            x: xyPos.x,
+            y: xyPos.y
+          });
+          // hwDataElmsNew.push(node);
+        }
       }
     }
+    // highwaysData.elements = hwDataElmsNew;
     drawHighways();
+    selectRandomEndpoints();
   } catch(error) {
     console.error("Failed to fetch geo data:", error);
     screenLoadingState("Failed to fetch data");
@@ -204,39 +213,44 @@ function drawHighways() {
   for (let way of highwaysData.elements) {
     if (way.type === "way" && way.nodes.length > 1) {
       mapGraphics.beginShape();
-      // for (let nodeId of way.nodes) {
-      //   let node = nodesMap[nodeId];
-      //   if (node) {
-      //     let x = map(node.lon, minLon, maxLon, 0, width);
-      //     let y = map(node.lat, maxLat, minLat, 0, height);
-      //     mapGraphics.vertex(x, y);
-      //   }
-      // }
-
       for (let i=0; i<way.nodes.length-1; i++) {
         let nodeId = way.nodes[i];
         let nextNodeId = way.nodes[i+1];
 
         let node = nodesMap.get(nodeId);
         if (node) {
-          // let x = map(node.lon, minLon, maxLon, 0, width);
-          // let y = map(node.lat, maxLat, minLat, 0, height);
           mapGraphics.vertex(node.x, node.y);
         }
 
-        if (!roadMap.get(nodeId)) roadMap.set(nodeId, []);
-        roadMap.get(nodeId).push(nextNodeId)
-        if (!roadMap.get(nextNodeId)) roadMap.set(nextNodeId, []);
-        roadMap.get(nextNodeId).push(nodeId)
+        if (!roadMap.get(nodeId) && nodesMap.get(nodeId)) roadMap.set(nodeId, []);
+        if (nodesMap.get(nodeId) && nodesMap.get(nextNodeId))  roadMap.get(nodeId).push(nextNodeId)
+        if (!roadMap.get(nextNodeId) && nodesMap.get(nextNodeId)) roadMap.set(nextNodeId, []);
+        if (nodesMap.get(nodeId) && nodesMap.get(nextNodeId)) roadMap.get(nextNodeId).push(nodeId)
       }
 
       let lastNode = way.nodes[way.nodes.length - 1];
-      mapGraphics.vertex(nodesMap.get(lastNode).x, nodesMap.get(lastNode).y);
+      let lastNodeData = nodesMap.get(lastNode);
+      if (lastNodeData) {
+        mapGraphics.vertex(lastNodeData.x, lastNodeData.y);
+      }
       mapGraphics.endShape();
     }
   }
 
   setButtonsEnabled(true);
+}
+
+function getGeodataName(data) {
+  if (data && data.address) {
+    let houseNumber = data.address.house_number;
+    if (houseNumber) houseNumber = houseNumber.split(";")[0];
+    if (data.name) return data.name;
+    if (data.address.road) return ((houseNumber) ? houseNumber : "") + " " + data.address.road;
+    if (data.address.city) return data.address.city;
+    if (data.address.state) return data.address.state;
+    if (data.address.country) return data.address.country;
+  }
+  return "Unknown";
 }
 
 async function mousePressed() {
@@ -249,29 +263,13 @@ async function mousePressed() {
   console.log(coord.lat + "," + coord.lon);
   console.log(nodesMap.get(nearestNode));
 
-  let name;
-  if (data && data.address) {
-    let houseNumber = data.address.house_number;
-    if (houseNumber) houseNumber = houseNumber.split(";")[0];
-    if (data.name) name = data.name;
-    else if (data.address.road) name = ((houseNumber) ? houseNumber : "") + " " + data.address.road;
-    else if (data.address.city) name = data.address.city;
-    else if (data.address.state) name = data.address.state;
-    else if (data.address.country) name = data.address.country;
-    else name = "Unknown";
-  }
-
-  let coordInXY = latLonToXY(data.lat, data.lon);
+  let name = getGeodataName(data);
 
   if (startSelection.state === "Selecting") {
-    // startSelection.x = coordInXY.x;
-    // startSelection.y = coordInXY.y;
     startSelection.nodeId = nearestNode;
     startSelection.state = "Selected";
     selStartBtn.innerText = name;
   } else if (endSelection.state === "Selecting") {
-    // endSelection.x = coordInXY.x;
-    // endSelection.y = coordInXY.y;
     endSelection.nodeId = nearestNode;
     endSelection.state = "Selected";
     selEndBtn.innerText = name;
@@ -307,6 +305,30 @@ function findNearestNode(lat, lon) {
   }
 
   return nearestNode;
+}
+
+async function selectRandomEndpoints() {
+  let nodeIds = Array.from(nodesMap.keys());
+  if (nodeIds.length < 2) return;
+  let startIndex = Math.floor(Math.random() * nodeIds.length);
+  let endIndex;
+  do {
+    endIndex = Math.floor(Math.random() * nodeIds.length);
+  } while (endIndex === startIndex);
+
+  startSelection.nodeId = nodeIds[startIndex];
+  endSelection.nodeId = nodeIds[endIndex];
+
+  startSelection.state = "Selected";
+  endSelection.state = "Selected";
+
+  let startloc = nodesMap.get(startSelection.nodeId);
+  let endloc = nodesMap.get(endSelection.nodeId);
+
+  let data = await fetchReverseGeocode(startloc.lat, startloc.lon);
+  selStartBtn.innerText = getGeodataName(data);
+  data = await fetchReverseGeocode(endloc.lat, endloc.lon);
+  selEndBtn.innerText = getGeodataName(data);
 }
 
 const selStartBtn = document.getElementById('sel-start');

@@ -13,7 +13,7 @@ var last
 let stack = []
 
 var msBetweenSteps = 10
-var generateMazeInstantly = false
+var generateMazeInstantly = true
 
 let done = false
 
@@ -188,7 +188,7 @@ function draw() {
 	if(dfsstack.length > 1){	
 		for(let i=0; i<dfsstack.length-1; i++) {
 			stroke(highlightColor.r, highlightColor.g, highlightColor.b)
-			strokeWeight(2)  
+			strokeWeight(3)  
 			line(dfsstack[i].x + boxSize/2, dfsstack[i].y + boxSize/2, dfsstack[i+1].x + boxSize/2, dfsstack[i+1].y + boxSize/2) 
 		}
 	}

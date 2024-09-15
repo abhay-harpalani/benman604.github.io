@@ -10,7 +10,8 @@ document.getElementById('mastar').addEventListener('click', () => {
     waitOneMsEvery = _waitOneMsEvery
 
     mapPathOverlay.clear();
-    mapPathOverlay.stroke(255, 50, 50);
+    // mapPathOverlay.stroke(60, 255, 255);
+    mapPathOverlay.stroke(lighterColor)
     mapPathOverlay.strokeWeight(2);
     mapPathOverlay.noFill();
 

@@ -9,7 +9,7 @@ document.getElementById('mbfs').addEventListener('click', () => {
     waitOneMsEvery = _waitOneMsEvery
 
     mapPathOverlay.clear();
-    mapPathOverlay.stroke(255, 50, 50);
+    mapPathOverlay.stroke(lighterColor);
     mapPathOverlay.strokeWeight(2);
     mapPathOverlay.noFill();
 
@@ -19,12 +19,14 @@ document.getElementById('mbfs').addEventListener('click', () => {
 
 async function bfs(start, end) {
     let tick = 0;
+    let drawBuffer = [];  // Buffer to collect lines to draw
+
     bfsqueue.push(start);
     while (bfsqueue.length > 0) {
         let current = bfsqueue.shift();
 
         if (tick % waitOneMsEvery === 0) {
-            await new Promise(resolve => setTimeout(resolve, 0.01));
+            await new Promise(resolve => setTimeout(resolve, 0.1));
         }
         tick++;
 
@@ -52,10 +54,18 @@ async function bfs(start, end) {
             if (!visited.has(neighbor)) {
                 bfsqueue.push(neighbor);
                 backtrace.set(neighbor, current);
-                
+
                 let nloc = nodesMap.get(neighbor);
-                mapPathOverlay.line(cloc.x, cloc.y, nloc.x, nloc.y);
+                drawBuffer.push([cloc.x, cloc.y, nloc.x, nloc.y]);
             }
+        }
+
+        // Draw lines in batches
+        if (tick % 1000 === 0 && drawBuffer.length > 0) {
+            for (let line of drawBuffer) {
+                mapPathOverlay.line(...line);
+            }
+            drawBuffer = [];  // Clear the buffer after drawing
         }
     }
 
