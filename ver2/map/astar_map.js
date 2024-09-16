@@ -28,7 +28,7 @@ async function astar(start, end) {
         let current = pq.shift().key;
 
         if (tick % waitOneMsEvery === 0) {
-            await new Promise(resolve => setTimeout(resolve, 0.1));
+            await new Promise(resolve => setTimeout(resolve, 0.5));
         }
         tick++;
 

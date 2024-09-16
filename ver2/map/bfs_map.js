@@ -61,7 +61,7 @@ async function bfs(start, end) {
         }
 
         // Draw lines in batches
-        if (tick % 1000 === 0 && drawBuffer.length > 0) {
+        if (tick % 2000 === 0 && drawBuffer.length > 0) {
             for (let line of drawBuffer) {
                 mapPathOverlay.line(...line);
             }

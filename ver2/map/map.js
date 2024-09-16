@@ -1,7 +1,23 @@
 const overpassAPI = "https://overpass-api.de/api/interpreter?data=" 
 const reverseGeocodeAPI = "https://nominatim.openstreetmap.org/reverse"
-const ipGeoAPI = "http://ip-api.com/json"
-const zipCodeAPI = "http://api.geonames.org/postalCodeLookupJSON?username=benny12&country=US&postalcode="
+const ipGeoAPI = "//ip-api.com/json"
+// const zipCodeAPI = "//api.geonames.org/postalCodeLookupJSON?username=benny12&country=US&postalcode="
+const geocodeAPI = "https://nominatim.openstreetmap.org/search?format=json&q="
+
+const default_places = [
+  {
+    coord: '37.792855,-122.3968986',
+    file: '/ver2/map/sfbay_geodata.json'
+  },
+  {
+    coord: '40.7127281,-74.0060152',
+    file: '/ver2/map/nymetro_geodata.json'
+  },
+  {
+    coord: '34.070877749999994,-118.44685070595054',
+    file: '/ver2/map/la_geodata.json'
+  }
+]
 
 let startSelection = {state: "Select", nodeId: null};
 let endSelection = {state: "Select", nodeId: null};
@@ -21,7 +37,7 @@ let backtrace = new Map()
 let visited = new Set()
 
 let waitOneMsEvery = 10;
-const _waitOneMsEvery = 1;
+const _waitOneMsEvery = 10;
 
 function miToDegLat(mi) {
   return mi / 69.172;
@@ -50,16 +66,28 @@ async function fetchCurrentGeo() {
   return data.lat + "," + data.lon;
 }
 
-async function fetchGeoFromZip(zip) {
-  let response = await fetch(zipCodeAPI + zip);
+async function fetchGeoFromSearch(search) {
+  let response = await fetch(geocodeAPI + search);
   let data = await response.json();
-  console.log("Fetched zip code geolocation:", data);
-  if (!data.postalcodes || data.postalcodes.length === 0) {
-    screenLoadingState("Invalid zip code");
+  console.log("Fetched search geolocation:", data);
+  if (!data || data.length === 0) {
+    screenLoadingState("Invalid search");
     return;
   }
-  return data.postalcodes[0].lat + "," + data.postalcodes[0].lng;
+  console.log(data);
+  return data[0].lat + "," + data[0].lon;
 }
+
+// async function fetchGeoFromZip(zip) {
+//   let response = await fetch(zipCodeAPI + zip);
+//   let data = await response.json();
+//   console.log("Fetched zip code geolocation:", data);
+//   if (!data.postalcodes || data.postalcodes.length === 0) {
+//     screenLoadingState("Invalid zip code");
+//     return;
+//   }
+//   return data.postalcodes[0].lat + "," + data.postalcodes[0].lng;
+// }
 
 async function fetchGeoData(coord, useDefault = false) {
   mapGraphics.clear();
@@ -69,6 +97,12 @@ async function fetchGeoData(coord, useDefault = false) {
 
   screenLoadingState("Loading...");
   setButtonsEnabled(false);
+
+  let place;
+  if (useDefault) {
+    place = default_places[Math.floor(Math.random() * default_places.length)];
+    coord = place.coord;
+  }
 
   let w = windowWidthMiles; // viewport width in miles
   let h = windowHeight * windowWidthMiles / windowWidth; 
@@ -96,7 +130,7 @@ async function fetchGeoData(coord, useDefault = false) {
   try {
     let response;
     if (useDefault) {
-      response = await fetch('/ver2/map/sfbay_geodata.json');
+      response = await fetch(place.file);
     } else {
       response = await fetch(overpassAPI + encodeURIComponent(query));
     }
@@ -163,6 +197,7 @@ async function setup() {
 
   // let coord = await fetchCurrentGeo();
   let coord = "37.7749,-122.4194"; // San Francisco
+  coord = "40.7127281,-74.0060152"; // New York
   await fetchGeoData(coord, useDefault = true);
   drawHighways();
 }
@@ -276,18 +311,20 @@ async function mousePressed() {
   }
 }
 
-document.getElementById('go-zip').addEventListener('click', async () => {
+document.getElementById('searchform').addEventListener('submit', async (e) => {
   screenLoadingState();
   startSelection.state = "Select";
   endSelection.state = "Select";
   selStartBtn.innerText = "Select start";
   selEndBtn.innerText = "Select end";
 
-  let zip = document.getElementById('zip').value;
-  let coord = await fetchGeoFromZip(zip);
+  e.preventDefault();
+  document.activeElement.blur();
+  let query = e.target.elements['query'].value;
+  // let coord = await fetchGeoFromZip(zip);
+  let coord = await fetchGeoFromSearch(query);
   if (coord) {
     await fetchGeoData(coord);
-    draw();
   }
 });
 
