@@ -8,118 +8,115 @@
 
     <script src="https://kit.fontawesome.com/43dc370da9.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.1/p5.js" id="p5"></script>
-    <script src="https://unpkg.com/matter-js@0.14.2/build/matter.min.js"></script>
+    <script src="script_manager.js" defer></script>
 
     <link rel="stylesheet" href="index.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
 </head>
 <body>
+
     <div id="sketch"></div>
 
     <div class="container">
         <div class="stage">
+            <h1>Benjamin Man</h1>
+            <div class="sidebyside">
+                <div>
+                    <img src="../pfp.jpg" alt="my pfp" class="pfp">
+                </div>
+                <div>
+                    <p class="ipa">/bɛnd͡ʒəmɪn mæn/</p> <br>
+                    <p>Computer Science and Linguistics @ UCLA '27</p>
+                </div>
+            </div>
+            <p>
+                Hi, I'm Ben. I'm a sophmore at UCLA, and I'm passionate about creative design and making an impact. I'm always looking for new opportunities to learn and grow.
+            </p>
+
+            <div class="btn-group">
+                <button id="prev" class="notransition">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button id="sketchName" class="notransition" style="width: 100%;">
+                    Map
+                </button>
+                <button id="next" class="notransition">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="links">
+                <a id="sourceLink" href="#" style="margin-right: 20px;">View source</a>
+                <!-- <a id="sketchesbtn" href="#" style="margin-left: 10px; margin-right: 10px;">All sketches</a> -->
+                <a id="toggleTheme" href="#">Light Mode</a>
+                <br><br>
+            </div>
+
+
+            <!-- <p>Anyways, here's a maze generation and solving algorithm visualization. Check out the <a href="https://github.com/benman604/benman604.github.io" style="font-weight: bold;">source</a> or the <a href="../" style="font-weight: bold;">older version</a> of this website.</p> -->
+            <!-- <br> -->
+
+            <div class="buttons-map">
+                <div class="grid" style="margin-bottom: 20px;">
+                    <div class="half">
+                        <p class="mini">Origin ●</p>
+                        <button id="sel-start">Select Start</button>
+                    </div>
+                    <div class="half">
+                        <p class="mini" style="text-align: right;">▲ Destination</p>
+                        <button id="sel-end">Select End</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="grid">
-                <div id="home">
-                    <h1>
-                        BENJAMIN MAN
-                    </h1>
-
-                    <div class="sidebyside">
-                        <div>
-                            <img src="pfp.jpg" alt="my pfp" class="pfp">
-                        </div>
-                        <div>
-                            <h3 class="ipa">bɛnd͡ʒəmɪn mæn</h3>
-                            <p>Computer Science and Linguistics @ UCLA ('27)</p>
-                        </div>
-                    </div>
-                    <p style="margin-top:5px">
-                        Hi, I'm Ben. I'm a sophomore at UCLA, and I'm passionate about creative design and making an impact. I'm always looking for new opportunities to learn and grow.
-                    </p>
-                    </p>
-                    <!-- <a href="#" id="projectsbtn">> Projects</a> -->
-                    <!-- <a href="projects-new/">> Projects</a> -->
-                    <br>
+                <div class="half socials">
+                    <a href="https://github.com/benman604" class="fa-brands fa-github"></a>
+                    <!-- <a href="https://benjamin-man.itch.io/" class="fa-brands fa-itch-io"></a> -->
+                    <!-- <a href="https://www.youtube.com/channel/UCttQGQE5lg9vOBdDMSe2rLA" class="fa-brands fa-youtube"></a> -->
+                    <a href="https://www.linkedin.com/in/benjamin-man-839b69196/" class="fa-brands fa-linkedin"></a>
+                    <a class="fa-solid fa-envelope" id="clickmail"></a>
                 </div>
 
-                <!-- <div id="projects" style="display: none;">
-                    <a href="#" class="homebtn">< Back</a>
-                    <hr>
-
-                    <a target="_blank" href="https://bm-tech.github.io/Infinite-Campus-Grade-Predictor/">Infinite Campus Grade Predictor</a> <br>
-                    <a target="_blank" href="https://dirdle.vercel.app/">dirdle</a> <br>
-                    <a target="_blank" href="https://play.google.com/store/apps/details?id=com.benjaminman.kraze">KRAZE!</a> <br>
-                    <a target="_blank" href="https://benjamin-man.itch.io/snake-3d">Snake 3D</a> <br>
-                    <a target="_blank" href="https://www.youtube.com/watch?v=LdDEhW-ROfU">3D Music Visualizer</a> <br>
-                    <a target="_blank" href="https://benman604.github.io/bezier/">Resursive Bezier</a> <br>
-                    <a target="_blank" href="https://benman604.github.io/Online-School-Scheduler/">Online School Scheduler</a> <br>
-                    <a target="_blank" href="https://github.com/benman604/autoping">Discord Autoping</a> <br>
-                    <a target="_blank" href="https://benjamin-man.itch.io/trigonometry-dash">Trigonometry Dash</a> <br>
-                    <a target="_blank" href="https://benjamin-man.itch.io/gravicube">Gravicube</a> <br>
-                    <a target="_blank" href="https://www.crazygames.com/game/respawn?bypassCache=at6cw">RESPAWN</a> <br>
-                    <a target="_blank" href="https://www.crazygames.com/game/shadow-dungeon?bypassCache=e8g1q">Shadow Dungeon</a> <br>
-                    <a target="_blank" href="https://github.com/benman604/userChrome.css">Firefox userChrome</a> <br><br>
-                </div> projects -->
-                
-                <div id="sketches" style="display: none;">
-                    <a href="#" class="homebtn">< Back</a>
-                    <hr>
-
-                    <!-- <a href="?sketch=0">Bounce</a> <br>
-                    <a href="?sketch=1">Walkers</a> <br>
-                    <a href="?sketch=2">Twist</a> <br>
-                    <a href="?sketch=3">Cubes</a> <br>
-                    <a href="?sketch=4">Wavemaker</a> <br>
-                    <a href="?sketch=5">Penrose Tiles</a> <br>
-                    <a href="?sketch=6">Game of Life</a> <br>
-                    <a href="?sketch=7">Physics</a> <br>
-                    <a href="?sketch=8">Pong</a> <br> -->
-                </div>
-
-
-                <div style="margin-top: 50px" id="links">
-                    <a href="https://github.com/benman604">
-                        <i class="fa-brands fa-github"></i>
-                        Github
-                    </a> <br>
-                    <a href="https://benjamin-man.itch.io/">
-                        <i class="fa-brands fa-itch-io"></i>
-                        itch.io
-                    </a> <br>
-                    <a href="https://www.youtube.com/channel/UCttQGQE5lg9vOBdDMSe2rLA">
-                        <i class="fa-brands fa-youtube"></i>
-                        YouTube
-                    </a> <br>
-                    <a href="https://www.linkedin.com/in/benjamin-man-839b69196/">
-                        <i class="fa-brands fa-linkedin"></i>
-                        LinkedIn
-                    </a> <br>
-                    <a>
-                        <i class="fas fa-envelope"></i>
-                        <b id="clickmail">Email</b>
-                    </a>
-                    <br><br>
-                    <div class="btn-group">
-                        <button id="prev">
-                            <i class="fa-solid fa-chevron-left"></i>
-                        </button>
-                        <button id="sketchName">
-                            "Bounce"
-                        </button>
-                        <button id="next">
-                            <i class="fa-solid fa-chevron-right"></i>
-                        </button>
+                <div class="half">
+                    <div class="buttons-maze" style="display: none;">
+                        <button id="regen">Randomize Maze</button>
+                        <button id="astar" disabled>Solve A*</button>
+                        <button id="bfs" disabled>Solve BFS</button>
+                        <button id="dfs" disabled>Solve DFS</button>
                     </div>
-                    <small><i id="author"></i></small>
-                    <a id="sourceLink" href="#" style="font-size: x-small;">View source</a> |
-                    <a id="sketchesbtn" href="#" style="font-size:x-small">All sketches</a>
-                </div> <!-- links sidebar -->
-            </div> <!-- grid -->
+                    <div class="buttons-map">
+                        <button id="mastar" disabled>Solve A*</button>
+                        <button id="mbfs" disabled>Solve BFS</button>
+                    </div>
+                    <div class="buttons-polar" style="display: none;">
+                        <button id="newshape">New Shape</button>
+                    </div>
+                </div>
+            </div>
+            <br>
         </div> <!-- stage -->
-    </div> <!-- container -->
 
-    <script id="sketchScript"></script>
-    <script src="loader.js"></script>
-    <script src="pages.js"></script>
+        <div class="bottomright buttons-map">
+            <form class="grid" style="gap: 0px 17px" id="searchform">
+                <input type="text" name="query" placeholder="Search for a place...">
+                <button type="submit" style="margin-top:5px; margin-bottom: 5px;">Go</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        document.getElementById('clickmail').addEventListener("click", function(event) {
+            event.preventDefault();
+            window.location.href = "mailto:8k1x54yhv" + "@rel" + "ay.firefox.com"
+        })
+    </script>
+
+    <!-- <script src="cell.js"></script>
+    <script src="astar_solve.js"></script>
+    <script src="bfs_solve.js"></script>
+    <script src="dfs_solve.js"></script>
+    <script src="maze.js"></script>
+    <script src="theme.js"></script> -->
 </body>
 </html>

@@ -7,15 +7,15 @@ const geocodeAPI = "https://nominatim.openstreetmap.org/search?format=json&q="
 const default_places = [
   {
     coord: '37.792855,-122.3968986',
-    file: '/ver2/map/sfbay_geodata.json'
+    file: 'map/sfbay_geodata.json'
   },
   {
     coord: '40.7127281,-74.0060152',
-    file: '/ver2/map/nymetro_geodata.json'
+    file: 'map/nymetro_geodata.json'
   },
   {
     coord: '34.070877749999994,-118.44685070595054',
-    file: '/ver2/map/la_geodata.json'
+    file: 'map/la_geodata.json'
   }
 ]
 

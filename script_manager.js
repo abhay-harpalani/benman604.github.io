@@ -23,17 +23,20 @@ let sketches = {
     "map": {
         scripts: ["map/map.js", "map/bfs_map.js", "map/astar_map.js"],
         buttons: ".buttons-map",
-        displayname: "Map"
+        displayname: "Map",
+        source: "https://github.com/benman604/benman604.github.io/tree/v2/map"
     },
     "maze": {
         scripts: ["maze/cell.js", "maze/maze.js", "maze/astar_maze.js", "maze/bfs_maze.js", "maze/dfs_maze.js"],
         buttons: ".buttons-maze",
-        displayname: "Maze"
+        displayname: "Maze",
+        source: "https://github.com/benman604/benman604.github.io/tree/v2/maze"
     },
     "polar": {
         scripts: ["polar/polar.js"],
         buttons: ".buttons-polar",
-        displayname: "Polar"
+        displayname: "Polar",
+        source: "https://github.com/benman604/benman604.github.io/tree/v2/polar"
     }
 }
 
@@ -60,6 +63,7 @@ for (const [key, value] of Object.entries(sketches)) {
 }
 
 document.getElementById('sketchName').innerText = sketches[currSketch].displayname;
+document.getElementById('sourceLink').href = sketches[currSketch].source;
 
 let promiseData = []; 
 [...common, ...scripts].forEach(function(info) { 
