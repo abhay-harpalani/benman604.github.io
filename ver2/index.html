@@ -38,7 +38,7 @@
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
                 <button id="sketchName" class="notransition" style="width: 100%;">
-                    Maze
+                    Map
                 </button>
                 <button id="next" class="notransition">
                     <i class="fa-solid fa-chevron-right"></i>
@@ -56,14 +56,16 @@
             <!-- <p>Anyways, here's a maze generation and solving algorithm visualization. Check out the <a href="https://github.com/benman604/benman604.github.io" style="font-weight: bold;">source</a> or the <a href="../" style="font-weight: bold;">older version</a> of this website.</p> -->
             <!-- <br> -->
 
-            <div class="grid buttons-map" style="margin-bottom: 20px;">
-                <div class="half">
-                    <p class="mini">Origin ●</p>
-                    <button id="sel-start">Select Start</button>
-                </div>
-                <div class="half">
-                    <p class="mini" style="text-align: right;">▲ Destination</p>
-                    <button id="sel-end">Select End</button>
+            <div class="buttons-map">
+                <div class="grid" style="margin-bottom: 20px;">
+                    <div class="half">
+                        <p class="mini">Origin ●</p>
+                        <button id="sel-start">Select Start</button>
+                    </div>
+                    <div class="half">
+                        <p class="mini" style="text-align: right;">▲ Destination</p>
+                        <button id="sel-end">Select End</button>
+                    </div>
                 </div>
             </div>
 
@@ -77,12 +79,7 @@
                 </div>
 
                 <div class="half">
-                    <!-- <button id="regen">Randomize Maze</button>
-                    <button id="astar" disabled>Solve A*</button>
-                    <button id="bfs" disabled>Solve BFS</button>
-                    <button id="dfs" disabled>Solve DFS</button> -->
-
-                    <div id="buttons-maze" style="display: none;">
+                    <div class="buttons-maze" style="display: none;">
                         <button id="regen">Randomize Maze</button>
                         <button id="astar" disabled>Solve A*</button>
                         <button id="bfs" disabled>Solve BFS</button>
@@ -91,7 +88,9 @@
                     <div class="buttons-map">
                         <button id="mastar" disabled>Solve A*</button>
                         <button id="mbfs" disabled>Solve BFS</button>
-                        <!-- <button id="dfs" disabled>Solve DFS</button> -->
+                    </div>
+                    <div class="buttons-polar" style="display: none;">
+                        <button id="newshape">New Shape</button>
                     </div>
                 </div>
             </div>

@@ -20,19 +20,46 @@ let addScript = (info) => {
 
 let common = ["theme.js", "priority_queue.js"]
 let sketches = {
-    "map": ["map/map.js", "map/bfs_map.js", "map/astar_map.js"],
-    "maze": ["maze/cell.js", "maze/maze.js", "maze/astar_maze.js", "maze/bfs_maze.js", "maze/dfs_maze.js"]
+    "map": {
+        scripts: ["map/map.js", "map/bfs_map.js", "map/astar_map.js"],
+        buttons: ".buttons-map",
+        displayname: "Map"
+    },
+    "maze": {
+        scripts: ["maze/cell.js", "maze/maze.js", "maze/astar_maze.js", "maze/bfs_maze.js", "maze/dfs_maze.js"],
+        buttons: ".buttons-maze",
+        displayname: "Maze"
+    },
+    "polar": {
+        scripts: ["polar/polar.js"],
+        buttons: ".buttons-polar",
+        displayname: "Polar"
+    }
 }
 
 let scripts = [];
 const params = new URLSearchParams(window.location.search);
-if(params.has("sketch")) {
-    currSketch = Object.keys(sketches).indexOf(params.get("sketch"));
-    scripts = sketches[params.get("sketch")]
+if(params.has("sketch") && sketches[params.get("sketch")] !== undefined) {
+    currSketch = params.get("sketch");
+    scripts = sketches[params.get("sketch")].scripts
 } else {
-    scripts = sketches[Object.keys(sketches)[0]]
+    currSketch = "map"
+    scripts = sketches[currSketch].scripts
 }
 
+document.querySelectorAll(sketches[currSketch].buttons).forEach(element => {
+  element.style.display = 'block';
+});
+
+for (const [key, value] of Object.entries(sketches)) {
+    if (key !== currSketch) {
+        document.querySelectorAll(value.buttons).forEach(element => {
+            element.style.display = 'none';
+        });
+    }
+}
+
+document.getElementById('sketchName').innerText = sketches[currSketch].displayname;
 
 let promiseData = []; 
 [...common, ...scripts].forEach(function(info) { 
@@ -46,12 +73,14 @@ Promise.all(promiseData).then(function() {
     console.log(gfgData + ' failed to load');
 }); 
 
+let skeys = Object.keys(sketches);
+let curri = skeys.indexOf(currSketch);
 prevBtn.onclick = () => {
-    currSketch = (currSketch - 1 + Object.keys(sketches).length) % Object.keys(sketches).length;
-    window.location.href = `?sketch=${Object.keys(sketches)[currSketch]}`;
+    curri = (curri + 1) % skeys.length;
+    window.location.href = `?sketch=${skeys[curri]}`;
 }
 
 nextBtn.onclick = () => {
-    currSketch = (currSketch + 1) % Object.keys(sketches).length;
-    window.location.href = `?sketch=${Object.keys(sketches)[currSketch]}`;
+    curri = (curri + 1) % skeys.length;
+    window.location.href = `?sketch=${skeys[curri]}`;
 }

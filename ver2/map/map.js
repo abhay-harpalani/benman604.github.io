@@ -183,10 +183,10 @@ function screenLoadingState(message) {
 }
 
 async function setup() {
-  document.querySelectorAll('.buttons-map').forEach(element => {
-    element.style.visibility = 'visible';
-  });
-  document.getElementById('buttons-maze').style.display = 'none';
+  // document.querySelectorAll('.buttons-map').forEach(element => {
+  //   element.style.visibility = 'visible';
+  // });
+  // document.getElementById('buttons-maze').style.display = 'none';
 
   let canvas = createCanvas(windowWidth, windowHeight);
 	canvas.parent('sketch');
@@ -394,4 +394,8 @@ function onUpdateColorTheme() {
 function setButtonsEnabled(val) {
 	document.getElementById('mastar').disabled = !val
 	document.getElementById('mbfs').disabled = !val
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight)
 }
