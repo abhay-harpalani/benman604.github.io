@@ -1,6 +1,6 @@
 let curvesize = 40
 const numlines = 100
-const numballs = 3
+const numballs = 2
 const ballsize = 30
 const xoff = 368 / 2
 const yoff = 0
@@ -119,8 +119,8 @@ function draw() {
                 let viOtherballNorm = otherball.vx * normx + otherball.vy * normy
                 let viBallTan = ball.vx * tanx + ball.vy * tany
                 let viOtherballTan = otherball.vx * tanx + otherball.vy * tany
-                let vfBall = viOtherballNorm 
-                let vfOtherball = viBallNorm
+                let vfBall = viOtherballNorm * elasticity
+                let vfOtherball = viBallNorm * elasticity
                 ball.vx = vfBall * normx + viBallTan * tanx
                 ball.vy = vfBall * normy + viBallTan * tany
                 otherball.vx = vfOtherball * normx + viOtherballTan * tanx
