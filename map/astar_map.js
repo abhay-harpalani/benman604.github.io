@@ -6,14 +6,7 @@ document.getElementById('mastar').addEventListener('click', () => {
     pq = new PriorityQueue();
     distTo.clear();
     visited.clear();
-    found = false;
-    waitOneMsEvery = _waitOneMsEvery
-
-    mapPathOverlay.clear();
-    // mapPathOverlay.stroke(60, 255, 255);
-    mapPathOverlay.stroke(lighterColor)
-    mapPathOverlay.strokeWeight(2);
-    mapPathOverlay.noFill();
+    prepareForSearch();
 
     if (startSelection.nodeId == null || endSelection.nodeId == null) return;
     astar(startSelection.nodeId, endSelection.nodeId);

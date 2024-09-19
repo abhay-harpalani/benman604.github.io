@@ -391,6 +391,17 @@ function onUpdateColorTheme() {
   //   triangle(endSelection.x, endSelection.y - 10, endSelection.x - 10, endSelection.y + 10, endSelection.x + 10, endSelection.y + 10);
 }
 
+function prepareForSearch() {
+  found = false;
+  waitOneMsEvery = _waitOneMsEvery
+
+  mapPathOverlay.clear();
+  // mapPathOverlay.stroke(60, 255, 255);
+  mapPathOverlay.stroke(100, 100, 255);
+  mapPathOverlay.strokeWeight(2);
+  mapPathOverlay.noFill();
+}
+
 function setButtonsEnabled(val) {
 	document.getElementById('mastar').disabled = !val
 	document.getElementById('mbfs').disabled = !val

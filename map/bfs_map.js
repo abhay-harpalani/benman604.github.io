@@ -5,13 +5,7 @@ document.getElementById('mbfs').addEventListener('click', () => {
     bfsqueue = [];
     visited.clear();
     backtrace.clear();
-    found = false;
-    waitOneMsEvery = _waitOneMsEvery
-
-    mapPathOverlay.clear();
-    mapPathOverlay.stroke(lighterColor);
-    mapPathOverlay.strokeWeight(2);
-    mapPathOverlay.noFill();
+    prepareForSearch();
 
     if (startSelection.nodeId == null || endSelection.nodeId == null) return;
     bfs(startSelection.nodeId, endSelection.nodeId);

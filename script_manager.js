@@ -80,7 +80,7 @@ Promise.all(promiseData).then(function() {
 let skeys = Object.keys(sketches);
 let curri = skeys.indexOf(currSketch);
 prevBtn.onclick = () => {
-    curri = (curri + 1) % skeys.length;
+    curri = (curri - 1 + skeys.length) % skeys.length;
     window.location.href = `?sketch=${skeys[curri]}`;
 }
 

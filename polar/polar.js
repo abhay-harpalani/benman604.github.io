@@ -1,6 +1,6 @@
 let curvesize = 40
 const numlines = 100
-const numballs = 2
+const numballs = 3
 const ballsize = 30
 const xoff = 368 / 2
 const yoff = 0
@@ -45,7 +45,8 @@ function addBall(x, y) {
         y: y,
         vx: 0,
         vy: 0,
-        r: ballsize
+        r: ballsize,
+        color: {h: random(0, 360), s: 70, l: 50}
     })
 }
 
@@ -62,7 +63,7 @@ function setup() {
 
 function draw() {
     background(backgroundColor.r, backgroundColor.g, backgroundColor.b);
-    fill(highlightColor.r, highlightColor.g, highlightColor.b);
+    // fill(highlightColor.r, highlightColor.g, highlightColor.b);
     translate(width/2 + xoff, height/2 + yoff);
     // ellipse(0, 0, 5)
         
@@ -150,7 +151,10 @@ function draw() {
         }
             
         noStroke()
+        colorMode(HSL)
+        fill(ball.color.h, ball.color.s, ball.color.l)
         ellipse(ball.x, ball.y, ball.r)
+        colorMode(RGB)
         
         ball.x += ball.vx
         ball.y += ball.vy
