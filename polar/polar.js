@@ -174,7 +174,8 @@ function mousePressed() {
             y: relMouseY,
             vx: 0,
             vy: 0,
-            r: ballsize
+            r: ballsize,
+            color: {h: random(0, 360), s: 70, l: 50}
         })
     }
 }

@@ -25,7 +25,7 @@ let autopilot = false
 
 let font
 function preload(){
-    font = loadFont("../bit5x3.ttf")
+    font = loadFont("bit5x3.ttf")
 }
 
 function setup(){

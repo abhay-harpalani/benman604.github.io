@@ -344,14 +344,22 @@ function findNearestNode(lat, lon) {
   return nearestNode;
 }
 
+const leftOfScreen = 368;
 async function selectRandomEndpoints() {
   let nodeIds = Array.from(nodesMap.keys());
   if (nodeIds.length < 2) return;
-  let startIndex = Math.floor(Math.random() * nodeIds.length);
+  let startIndex;
+  let times = 0;
+  do {
+    startIndex = Math.floor(Math.random() * nodeIds.length);
+    times++;
+  } while (nodesMap.get(nodeIds[startIndex]).x < leftOfScreen && times < 100);
   let endIndex;
+  times = 0;
   do {
     endIndex = Math.floor(Math.random() * nodeIds.length);
-  } while (endIndex === startIndex);
+    times++;
+  } while (endIndex === startIndex || nodesMap.get(nodeIds[endIndex]).x < leftOfScreen && times < 100);
 
   startSelection.nodeId = nodeIds[startIndex];
   endSelection.nodeId = nodeIds[endIndex];
